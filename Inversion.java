@@ -1,18 +1,19 @@
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Inversion {
 
-	public static int sortAndSplitCount(int[] arr, int low, int high) {
+	public static long sortAndSplitCount(int[] arr, int low, int high) {
 		int n = high - low;
 		if (n < 2) {
 			if (arr[low] <= arr[high]) {
-				Arrays.sort(arr, low, high + 1);
 				return 0;
 			} else {
 				Arrays.sort(arr, low, high + 1);
@@ -20,16 +21,17 @@ public class Inversion {
 			}
 		} else {
 			int i = low;
-			int j = n / 2 + n % 2;
-			int count = 0;
-			while (i < n / 2 + n % 2 && j <= high) {
+			int j = n / 2 + low + 1;
+			int m = j;
+			long count = 0;
+			while (i <= (n / 2) + low && j <= high) {
 				if (arr[i] < arr[j]) {
 					i++;
 				} else if (arr[i] > arr[j]) {
-					count += j - i;
+					count += m - i;
 					j++;
 				} else {
-					count += j - i - 1;
+					count += m - i - 1;
 					j++;
 				}
 			}
@@ -39,16 +41,18 @@ public class Inversion {
 
 	}
 
-	public static int getInversionsNo(int[] arr, int low, int high) {
-		int x = 0, y = 0, z = 0;
+	public static BigInteger getInversionsNo(int[] arr, int low, int high) {
+		BigInteger x = new BigInteger("0");
+		BigInteger y = new BigInteger("0");
+		BigInteger z = new BigInteger("0");
 		if (high - low < 2) {
-			z += sortAndSplitCount(arr, low, high);
+			z = z.add(new BigInteger(Long.toString(sortAndSplitCount(arr, low, high))));
 		} else {
-			x += getInversionsNo(arr, low, (high - low) / 2 + low + (high - low) % 2);
-			y += getInversionsNo(arr, (high - low) / 2 + low + (high - low) % 2, high);
-			z += sortAndSplitCount(arr, low, high);
+			x = x.add(getInversionsNo(arr, low, (high - low) / 2 + low));
+			y = y.add(getInversionsNo(arr, (high - low) / 2 + low + 1, high));
+			z = z.add(new BigInteger(Long.toString(sortAndSplitCount(arr, low, high))));
 		}
-		return x + y + z;
+		return x.add(y).add(z);
 	}
 
 	public static void main(String[] args) {
@@ -59,7 +63,8 @@ public class Inversion {
 		for (int i = 0; i < n; i++) {
 			a[i] = fs.nextInt();
 		}
-		System.out.println(getInversionsNo(a, 0, a.length - 1));
+		String result = getInversionsNo(a, 0, a.length - 1).toString();
+		System.out.println(result);
 
 	}
 
